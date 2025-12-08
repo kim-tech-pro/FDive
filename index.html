@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FDive - Клуб подводного плавания</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Переменные и сброс стилей --- */
+        :root {
+            --primary-blue: #004e92;      /* Глубокий синий */
+            --bright-cyan: #00b4db;       /* Яркая бирюза */
+            --sea-green: #20B2AA;         /* Морская волна/зеленоватый */
+            --dark-overlay: rgba(0, 20, 40, 0.7);
+            --light-text: #f0f8ff;
+            --dark-text: #333;
+            --bg-light: #f4fcfd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* --- Навигация --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 78, 146, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--bright-cyan);
+        }
+
+        nav ul {
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--sea-green);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Мобильное меню (гамбургер) - упрощенная реализация через CSS */
+        .mobile-menu-btn {
+            display: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* --- Главный экран (Hero) --- */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(var(--dark-overlay), var(--dark-overlay)), 
+                        url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Параллакс эффект */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+            opacity: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--bright-cyan));
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4);
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+            opacity: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 180, 219, 0.6);
+            background: linear-gradient(45deg, var(--bright-cyan), var(--primary-blue));
+        }
+
+        /* --- Общие стили секций --- */
+        section {
+            padding: 80px 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--primary-blue);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--sea-green);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- О клубе --- */
+        .about-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .about-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .about-image {
+            flex: 1;
+            min-width: 300px;
+            height: 350px;
+            background-image: url('https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        /* --- Обучение и Поездки (Сетка карточек) --- */
+        .cards-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 78, 146, 0.2);
+        }
+
+        .card-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .card-tag {
+            margin-top: auto;
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: rgba(32, 178, 170, 0.1);
+            color: var(--primary-blue);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        /* Фон для обучения - легкий градиент */
+        #training {
+            background: linear-gradient(180deg, var(--bg-light) 0%, #e0f7fa 100%);
+        }
+
+        /* --- Контакты --- */
+        #contact {
+            background-color: #fff;
+        }
+
+        .contact-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            justify-content: space-between;
+        }
+
+        .contact-info, .contact-form {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .contact-item {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+
+        .icon {
+            width: 50px;
+            height: 50px;
+            background-color: var(--bright-cyan);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            background-color: #f9f9f9;
+        }
+
+        .contact-form textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .contact-form button {
+            width: 100%;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--primary-blue);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .social-links a:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* --- Анимации --- */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Адаптивность --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            
+            nav { position: fixed; }
+            
+            nav ul {
+                display: none; /* Скрываем меню на мобильных для простоты, нужен JS для тогла, 
+                                  но сделаем вертикальный стек для CSS-only решения ниже */
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                background: var(--primary-blue);
+                flex-direction: column;
+                text-align: center;
+                padding: 20px 0;
+                gap: 15px;
+            }
+
+            /* Простой CSS хак для мобильного меню, чтобы не использовать JS в примере */
+            .mobile-menu-btn { display: block; }
+            
+            #menu-toggle { display: none; }
+            
+            #menu-toggle:checked + nav ul {
+                display: flex;
+            }
+
+            .container {
+                position: relative;
+            }
+            
+            .mobile-label {
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">F<span>Dive</span></a>
+            
+            <!-- Скрытый чекбокс для мобильного меню -->
+            <input type="checkbox" id="menu-toggle" style="display:none;">
+            <label for="menu-toggle" class="mobile-menu-btn mobile-label">&#9776;</label>
+
+            <nav>
+                <ul>
+                    <li><a href="#about">О клубе</a></li>
+                    <li><a href="#training">Обучение</a></li>
+                    <li><a href="#trips">Поездки</a></li>
+                    <li><a href="#contact">Контакты</a></li>
+                    <li><a href="#contact" style="color:var(--bright-cyan);">Записаться</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Главный экран -->
+    <section class="hero">
+        <h1>Открой глубину с FDive</h1>
+        <p>Профессиональное обучение дайвингу и незабываемые экспедиции от тропиков до ледяных вод.</p>
+        <a href="#training" class="btn">Начать погружение</a>
+    </section>
+
+    <!-- О клубе -->
+    <section id="about">
+        <h2 class="section-title">О нашем клубе</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p><strong>FDive</strong> — это больше, чем школа дайвинга. Это сообщество людей, влюбленных в подводный мир. Мы открылись с целью сделать дайвинг доступным, безопасным и захватывающим.</p>
+                <p>Наша философия строится на трех китах: безопасность, профессионализм и экологичность. Мы не просто учим дышать под водой, мы учим понимать и уважать океан.</p>
+                <p>Наши инструкторы имеют международную сертификацию и тысячи часов под водой в самых разных условиях: от теплых морей до подледных погружений.</p>
+            </div>
+            <div class="about-image"></div>
+        </div>
+    </section>
+
+    <!-- Обучение -->
+    <section id="training">
+        <h2 class="section-title">Системы обучения</h2>
+        <div class="cards-grid">
+            <!-- PADI -->
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1585975305988-8b92b6534568?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>PADI</h3>
+                    <p>Самая популярная в мире система обучения дайвингу. Идеально для новичков и тех, кто хочет нырять в любой точке планеты.</p>
+                    <span class="card-tag">От Open Water до Master Scuba</span>
+                </div>
+            </div>
+            <!-- CMAS -->
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1518353381673-c6c703b44b82?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>CMAS</h3>
+                    <p>Всемирная конфедерация подводной деятельности. Классическая школа с глубоким упором на физику погружений и спортивную составляющую.</p>
+                    <span class="card-tag">Сертификат 1★, 2★, 3★</span>
+                </div>
+            </div>
+            <!-- Спецкурсы -->
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1582239436329-a1b65108f9c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Пробное погружение</h3>
+                    <p>Никогда не ныряли? Попробуйте Discover Scuba Diving в бассейне под присмотром инструктора. Безопасно и увлекательно.</p>
+                    <span class="card-tag">Для новичков</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Поездки -->
+    <section id="trips">
+        <h2 class="section-title">Наши экспедиции</h2>
+        <div class="cards-grid">
+            <!-- Баренцево море -->
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1547493208-8e67a718d070?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Баренцево море</h3>
+                    <p>Суровая красота севера. Погружения к затонувшим кораблям, встреча с камчатским крабом и невероятные ландшафты тундры.</p>
+                    <span class="card-tag">Холодная вода</span>
+                </div>
+            </div>
+            <!-- Байкал -->
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1549429188-466547a469a4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Озеро Байкал</h3>
+                    <p>Самое чистое озеро планеты. Кристальная видимость до 40 метров, ледяные гроты зимой и уникальная эндемичная фауна.</p>
+                    <span class="card-tag">Пресная вода / Подледный дайвинг</span>
+                </div>
+            </div>
+            <!-- Теплые моря -->
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1582967788606-a171f1080ca8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="card-content">
+                    <h3>Клубные выезды</h3>
+                    <p>Регулярные групповые поездки на Красное море и Мальдивы для сдачи открытой воды и отдыха в компании единомышленников.</p>
+                    <span class="card-tag">Тропики</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Контакты -->
+    <section id="contact">
+        <h2 class="section-title">Контакты</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <div class="icon">📍</div>
+                    <div>
+                        <h4>Наш адрес:</h4>
+                        <p>г. Москва, ул. Водная, д. 12, Бассейн "Океан"</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">⏰</div>
+                    <div>
+                        <h4>Режим работы:</h4>
+                        <p>Пн-Пт: 10:00 - 22:00</p>
+                        <p>Сб-Вс: 09:00 - 20:00</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">📞</div>
+                    <div>
+                        <h4>Телефон:</h4>
+                        <p>+7 (999) 000-00-00</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="icon">✉️</div>
+                    <div>
+                        <h4>Email:</h4>
+                        <p>info@fdive-club.ru</p>
+                    </div>
+                </div>
+            </div>
+
+            <form class="contact-form">
+                <h3>Запишитесь на погружение</h3>
+                <input type="text" placeholder="Ваше имя" required>
+                <input type="tel" placeholder="Ваш телефон" required>
+                <textarea placeholder="Сообщение или вопрос"></textarea>
+                <button type="submit" class="btn">Отправить заявку</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container" style="flex-direction: column;">
+            <p>&copy; 2023 FDive Club. Все права защищены.</p>
+            <div class="social-links">
+                <a href="#">VK</a>
+                <a href="#">Telegram</a>
+                <a href="#">YouTube</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
