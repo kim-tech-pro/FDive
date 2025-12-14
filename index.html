@@ -177,19 +177,29 @@
         .section-title {
             text-align: center;
             font-size: 2.5rem;
-            margin-bottom: 60px;
+            margin: 0 auto 60px;
             color: var(--primary-blue);
             position: relative;
+            display: block;
+            width: fit-content;
+            max-width: 100%;
+            padding: 0 10px;
         }
 
         .section-title::after {
             content: '';
             display: block;
-            width: 80px;
+            width: 0;
             height: 4px;
             background: var(--sea-green);
             margin: 15px auto 0;
             border-radius: 2px;
+            transition: width 0.8s ease;
+        }
+
+        .section-title.visible::after {
+            width: 100%;
+            transition-duration: 1.2s;
         }
 
         /* --- О клубе --- */
@@ -238,10 +248,17 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
             position: relative;
             display: flex;
             flex-direction: column;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .card:hover {
@@ -250,9 +267,20 @@
         }
 
         .card-img {
-            height: 200px;
+            height: 220px;
             background-size: cover;
             background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0, 78, 146, 0.35) 100%);
+            mix-blend-mode: multiply;
+            pointer-events: none;
         }
 
         .card-content {
@@ -290,10 +318,48 @@
             background: linear-gradient(180deg, var(--bg-light) 0%, #e0f7fa 100%);
         }
 
-        /* --- Контакты --- */
-        #contact {
-            background-color: #fff;
+        #trips {
+            background: linear-gradient(180deg, #f4fcfd 0%, #d8f1ff 80%);
+            position: relative;
+            overflow: hidden;
         }
+
+        #trips::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.6) 0, transparent 45%), 
+                              radial-gradient(circle at 80% 0%, rgba(255,255,255,0.4) 0, transparent 55%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #contact {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, #ecf8ff 100%);
+            overflow: hidden;
+        }
+
+        #contact::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 15% 30%, rgba(0, 180, 219, 0.1) 0, transparent 50%), 
+                              radial-gradient(circle at 85% 20%, rgba(0, 78, 146, 0.1) 0, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #contact .contact-container {
+            position: relative;
+        }
+
+        #trips .cards-grid {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Контакты --- */
 
         .contact-container {
             max-width: 1000px;
@@ -348,6 +414,49 @@
             width: 100%;
         }
 
+        .mailto-hint {
+            font-size: 0.85rem;
+            margin-top: 10px;
+            color: #4a4a4a;
+            text-align: center;
+        }
+
+        .contact-form.highlight {
+            animation: formGlow 2s ease;
+            box-shadow: 0 0 0 4px rgba(0, 180, 219, 0.4);
+            border-radius: 12px;
+        }
+
+        .btn.loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.6);
+            border-top-color: white;
+            border-radius: 50%;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: spin 0.8s linear infinite;
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 20, 40, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 900;
+        }
+
         /* --- Footer --- */
         footer {
             background-color: var(--primary-blue);
@@ -388,6 +497,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes formGlow {
+            from { box-shadow: 0 0 0 0 rgba(0, 180, 219, 0.6); }
+            to { box-shadow: 0 0 0 4px rgba(0, 180, 219, 0.2); }
+        }
+
+        @keyframes spin {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
         /* --- Адаптивность --- */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
@@ -401,11 +520,18 @@
                 top: 60px;
                 left: 0;
                 width: 100%;
-                background: var(--primary-blue);
+                background: rgba(0, 78, 146, 0.98);
                 flex-direction: column;
                 text-align: center;
-                padding: 20px 0;
-                gap: 15px;
+                padding: 30px 0;
+                gap: 20px;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+                transform-origin: top;
+                transform: scaleY(0.8) translateY(-10px);
+                opacity: 0;
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                border-bottom-left-radius: 20px;
+                border-bottom-right-radius: 20px;
             }
 
             /* Простой CSS хак для мобильного меню, чтобы не использовать JS в примере */
@@ -413,8 +539,20 @@
             
             #menu-toggle { display: none; }
             
-            #menu-toggle:checked + nav ul {
+            #menu-toggle:checked ~ nav ul {
                 display: flex;
+                transform: scaleY(1) translateY(0);
+                opacity: 1;
+            }
+            
+            #menu-toggle:checked ~ .mobile-overlay {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            #menu-toggle:checked ~ .mobile-overlay {
+                opacity: 1;
+                pointer-events: auto;
             }
 
             .container {
@@ -427,6 +565,9 @@
                 cursor: pointer;
                 display: block;
             }
+
+            .card-img { height: 170px; }
+            .card-content { padding: 20px; }
         }
     </style>
 </head>
@@ -447,9 +588,10 @@
                     <li><a href="#training">Обучение</a></li>
                     <li><a href="#trips">Поездки</a></li>
                     <li><a href="#contact">Контакты</a></li>
-                    <li><a href="#contact" style="color:var(--bright-cyan);">Записаться</a></li>
+                    <li><a href="#contact" class="scroll-to-form" data-scroll-target="contact-form" style="color:var(--bright-cyan);">Записаться</a></li>
                 </ul>
             </nav>
+            <div class="mobile-overlay"></div>
         </div>
     </header>
 
@@ -577,12 +719,13 @@
                 </div>
             </div>
 
-            <form class="contact-form">
+            <form class="contact-form" id="contact-form">
                 <h3>Запишитесь на погружение</h3>
-                <input type="text" placeholder="Ваше имя" required>
-                <input type="tel" placeholder="Ваш телефон" required>
-                <textarea placeholder="Сообщение или вопрос"></textarea>
+                <input type="text" name="name" placeholder="Ваше имя" required>
+                <input type="tel" name="phone" placeholder="Ваш телефон" required>
+                <textarea name="message" placeholder="Сообщение или вопрос"></textarea>
                 <button type="submit" class="btn">Отправить заявку</button>
+                <p class="mailto-hint">После нажатия откроется почтовое приложение.</p>
             </form>
         </div>
     </section>
@@ -598,5 +741,100 @@
         </div>
     </footer>
 
+    <script>
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = contactForm ? contactForm.querySelector('button[type="submit"]') : null;
+
+        if (contactForm) {
+            contactForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const formData = new FormData(contactForm);
+                const name = (formData.get('name') || '').trim();
+                const phone = (formData.get('phone') || '').trim();
+                const message = (formData.get('message') || '').trim();
+
+                const subject = encodeURIComponent('Запись на погружение');
+                const body = encodeURIComponent(
+`Имя: ${name}
+Телефон: ${phone}
+Сообщение: ${message || 'Не указано'}`
+                );
+
+                if (submitBtn) {
+                    submitBtn.dataset.originalText = submitBtn.textContent;
+                    submitBtn.textContent = 'Открываем почту...';
+                    submitBtn.classList.add('loading');
+                }
+
+                window.location.href = `mailto:veringval@gmail.com?subject=${subject}&body=${body}`;
+                contactForm.reset();
+
+                setTimeout(() => {
+                    if (submitBtn && submitBtn.dataset.originalText) {
+                        submitBtn.textContent = submitBtn.dataset.originalText;
+                        submitBtn.classList.remove('loading');
+                    }
+                }, 1500);
+            });
+        }
+
+        const cards = document.querySelectorAll('.card');
+        const sectionTitles = document.querySelectorAll('.section-title');
+
+        if ('IntersectionObserver' in window) {
+            const cardObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.25 });
+
+            cards.forEach(card => cardObserver.observe(card));
+
+            const titleObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.intersectionRatio > 0.15) {
+                        entry.target.classList.add('visible');
+                    } else {
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, { threshold: [0, 0.15, 0.6], rootMargin: '-5% 0px -20% 0px' });
+
+            sectionTitles.forEach(title => titleObserver.observe(title));
+        } else {
+            cards.forEach(card => card.classList.add('visible'));
+            sectionTitles.forEach(title => title.classList.add('visible'));
+        }
+
+        const scrollLinks = document.querySelectorAll('.scroll-to-form');
+        const menuToggle = document.getElementById('menu-toggle');
+
+        scrollLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const target = document.getElementById(link.dataset.scrollTarget);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    target.classList.add('highlight');
+                    setTimeout(() => target.classList.remove('highlight'), 2000);
+                }
+
+                if (menuToggle) {
+                    menuToggle.checked = false;
+                }
+            });
+        });
+
+        const mobileOverlay = document.querySelector('.mobile-overlay');
+        if (mobileOverlay && menuToggle) {
+            mobileOverlay.addEventListener('click', () => {
+                menuToggle.checked = false;
+            });
+        }
+    </script>
 </body>
 </html>
